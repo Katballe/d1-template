@@ -1,14 +1,13 @@
 import { renderHtml } from "./renderHtml";
 
+type LoveNote = { id: number; reason: string; icon: string };
+
 export default {
 	async fetch(request, env) {
-		const stmt = env.DB.prepare("SELECT * FROM comments LIMIT 3");
-		const { results } = await stmt.all();
+		const { results } = await env.DB.prepare("SELECT * FROM love_notes ORDER BY id").all<LoveNote>();
 
-		return new Response(renderHtml(JSON.stringify(results, null, 2)), {
-			headers: {
-				"content-type": "text/html",
-			},
+		return new Response(renderHtml(results), {
+			headers: { "content-type": "text/html; charset=UTF-8" },
 		});
 	},
 } satisfies ExportedHandler<Env>;
