@@ -1,5 +1,16 @@
 type LoveNote = { id: number; reason: string; icon: string };
 
+const PLACES = [
+	{ name: "Madeira", lat: 32.7607, lng: -16.9595 },
+	{ name: "Athens", lat: 37.9838, lng: 23.7275 },
+	{ name: "Porto", lat: 41.1579, lng: -8.6291 },
+	{ name: "Copenhagen", lat: 55.6761, lng: 12.5683 },
+	{ name: "Tbilisi", lat: 41.6938, lng: 44.8015 },
+	{ name: "Kutaisi", lat: 42.2679, lng: 42.6946 },
+	{ name: "Juta", lat: 42.65, lng: 44.517 },
+	{ name: "Santorini", lat: 36.3932, lng: 25.4615 },
+];
+
 export function renderHtml(notes: LoveNote[]) {
 	const cards = notes
 		.map(
@@ -11,12 +22,15 @@ export function renderHtml(notes: LoveNote[]) {
 		)
 		.join("");
 
+	const placesJson = JSON.stringify(PLACES);
+
 	return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>For Mariam ❤️</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -67,7 +81,7 @@ export function renderHtml(notes: LoveNote[]) {
     main {
       position: relative;
       z-index: 1;
-      max-width: 860px;
+      max-width: 900px;
       margin: 0 auto;
       padding: 4rem 1.5rem 6rem;
     }
@@ -154,6 +168,67 @@ export function renderHtml(notes: LoveNote[]) {
       text-align: center;
     }
 
+    /* ── Map ── */
+    .map-wrap {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 0 40px rgba(233,30,140,0.15);
+      margin-bottom: 4rem;
+      height: 420px;
+    }
+    #map { width: 100%; height: 100%; }
+
+    /* Leaflet overrides */
+    .leaflet-container { background: #0f0715; }
+    .leaflet-popup-content-wrapper {
+      background: #1e0a2e;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      color: var(--cream);
+      box-shadow: 0 4px 20px rgba(233,30,140,0.3);
+    }
+    .leaflet-popup-tip { background: #1e0a2e; }
+    .leaflet-popup-content {
+      margin: 10px 14px;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 400;
+      white-space: nowrap;
+    }
+    .leaflet-popup-close-button { color: var(--rose-lt) !important; }
+    .leaflet-control-zoom a {
+      background: #1e0a2e !important;
+      color: var(--rose-lt) !important;
+      border-color: var(--card-border) !important;
+    }
+    .leaflet-control-attribution {
+      background: rgba(15,7,21,0.7) !important;
+      color: rgba(252,228,236,0.3) !important;
+    }
+    .leaflet-control-attribution a { color: rgba(252,228,236,0.4) !important; }
+
+    /* Custom pin marker */
+    .pin-marker {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: radial-gradient(circle at 40% 35%, #ff6baa, #e91e8c);
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      box-shadow: 0 2px 12px rgba(233,30,140,0.6);
+      border: 2px solid rgba(255,255,255,0.25);
+    }
+    .pin-marker::after {
+      content: '❤';
+      transform: rotate(45deg);
+      font-size: 13px;
+      color: #fff;
+      display: block;
+    }
+
     /* ── Cards grid ── */
     .grid {
       display: grid;
@@ -227,6 +302,13 @@ export function renderHtml(notes: LoveNote[]) {
     <p class="sign">— Yours, forever ❤️</p>
   </article>
 
+  <div class="divider">✦</div>
+
+  <h2 class="section-title">Places we've been together</h2>
+  <div class="map-wrap">
+    <div id="map"></div>
+  </div>
+
   <h2 class="section-title">Reasons I love you</h2>
   <div class="grid">
     ${cards}
@@ -235,8 +317,10 @@ export function renderHtml(notes: LoveNote[]) {
 
 <footer>made with love, just for you ✦ mariam</footer>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
   (function () {
+    /* ── Floating hearts ── */
     const canvas = document.getElementById('hearts-canvas');
     const emojis = ['❤️', '🌸', '✨', '💕', '💗', '🌹'];
     function spawnHeart() {
@@ -253,6 +337,30 @@ export function renderHtml(notes: LoveNote[]) {
     }
     for (let i = 0; i < 12; i++) setTimeout(spawnHeart, i * 600);
     setInterval(spawnHeart, 1800);
+
+    /* ── Map ── */
+    const places = ${placesJson};
+
+    const map = L.map('map', { zoomControl: true, scrollWheelZoom: false }).setView([44, 18], 4);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+      maxZoom: 19,
+    }).addTo(map);
+
+    const pinIcon = L.divIcon({
+      className: '',
+      html: '<div class="pin-marker"></div>',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -34],
+    });
+
+    places.forEach(function(p) {
+      L.marker([p.lat, p.lng], { icon: pinIcon })
+        .bindPopup('<strong>' + p.name + '</strong>')
+        .addTo(map);
+    });
   })();
 </script>
 </body>
