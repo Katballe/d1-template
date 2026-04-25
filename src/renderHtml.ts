@@ -168,6 +168,61 @@ export function renderHtml(notes: LoveNote[]) {
       text-align: center;
     }
 
+    /* ── Countdown ── */
+    .countdown-note {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 2rem 2rem 1.8rem;
+      margin-bottom: 3rem;
+      text-align: center;
+      backdrop-filter: blur(8px);
+    }
+    .countdown-note .note-label {
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(252,228,236,0.5);
+      margin-bottom: 0.5rem;
+    }
+    .countdown-note .note-text {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.2rem;
+      font-style: italic;
+      color: rgba(252,228,236,0.9);
+      margin-bottom: 1.4rem;
+      line-height: 1.6;
+    }
+    .countdown-boxes {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .cbox {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .cbox-num {
+      font-size: 2.4rem;
+      font-weight: 700;
+      font-family: 'Playfair Display', Georgia, serif;
+      background: linear-gradient(135deg, var(--rose-lt), var(--rose));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      min-width: 2.8ch;
+      line-height: 1;
+    }
+    .cbox-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(252,228,236,0.4);
+    }
+
     /* ── Map ── */
     .map-wrap {
       border-radius: 16px;
@@ -304,6 +359,17 @@ export function renderHtml(notes: LoveNote[]) {
 
   <div class="divider">✦</div>
 
+  <div class="countdown-note">
+    <p class="note-label">next time</p>
+    <p class="note-text">I am counting down the days until I get to see you again — May 12th cannot come soon enough. ❤️</p>
+    <div class="countdown-boxes">
+      <div class="cbox"><span class="cbox-num" id="cd-days">--</span><span class="cbox-label">days</span></div>
+      <div class="cbox"><span class="cbox-num" id="cd-hours">--</span><span class="cbox-label">hours</span></div>
+      <div class="cbox"><span class="cbox-num" id="cd-mins">--</span><span class="cbox-label">minutes</span></div>
+      <div class="cbox"><span class="cbox-num" id="cd-secs">--</span><span class="cbox-label">seconds</span></div>
+    </div>
+  </div>
+
   <h2 class="section-title">Places we've been together</h2>
   <div class="map-wrap">
     <div id="map"></div>
@@ -337,6 +403,29 @@ export function renderHtml(notes: LoveNote[]) {
     }
     for (let i = 0; i < 12; i++) setTimeout(spawnHeart, i * 600);
     setInterval(spawnHeart, 1800);
+
+    /* ── Countdown ── */
+    (function () {
+      const target = new Date('2026-05-12T00:00:00');
+      function tick() {
+        const diff = target - Date.now();
+        if (diff <= 0) {
+          document.querySelector('.countdown-note .note-text').textContent = 'Today is the day! 🎉❤️';
+          ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(function(id){ document.getElementById(id).textContent = '0'; });
+          return;
+        }
+        const d = Math.floor(diff / 86400000);
+        const h = Math.floor((diff % 86400000) / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        document.getElementById('cd-days').textContent  = String(d);
+        document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
+        document.getElementById('cd-mins').textContent  = String(m).padStart(2,'0');
+        document.getElementById('cd-secs').textContent  = String(s).padStart(2,'0');
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
 
     /* ── Map ── */
     const places = ${placesJson};
