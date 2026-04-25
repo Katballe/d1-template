@@ -1,5 +1,3 @@
-type LoveNote = { id: number; reason: string; icon: string };
-
 const PLACES = [
 	{ name: "Madeira", lat: 32.7607, lng: -16.9595 },
 	{ name: "Athens", lat: 37.9838, lng: 23.7275 },
@@ -11,17 +9,7 @@ const PLACES = [
 	{ name: "Santorini", lat: 36.3932, lng: 25.4615 },
 ];
 
-export function renderHtml(notes: LoveNote[]) {
-	const cards = notes
-		.map(
-			({ reason, icon }) => `
-        <div class="card">
-          <div class="card-icon">${icon}</div>
-          <p class="card-reason">${reason}</p>
-        </div>`
-		)
-		.join("");
-
+export function renderHtml() {
 	const placesJson = JSON.stringify(PLACES);
 
 	return `<!DOCTYPE html>
@@ -229,7 +217,6 @@ export function renderHtml(notes: LoveNote[]) {
       overflow: hidden;
       border: 1px solid var(--card-border);
       box-shadow: 0 0 40px rgba(233,30,140,0.15);
-      margin-bottom: 4rem;
       height: 420px;
     }
     #map { width: 100%; height: 100%; }
@@ -284,37 +271,6 @@ export function renderHtml(notes: LoveNote[]) {
       display: block;
     }
 
-    /* ── Cards grid ── */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 1.2rem;
-    }
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 1.6rem 1.4rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 0.9rem;
-      backdrop-filter: blur(6px);
-      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-    }
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: var(--rose);
-      box-shadow: 0 8px 32px rgba(233,30,140,0.25);
-    }
-    .card-icon { font-size: 2.2rem; line-height: 1; }
-    .card-reason {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      color: rgba(252,228,236,0.88);
-    }
-
     /* ── Footer ── */
     footer {
       position: relative;
@@ -335,7 +291,7 @@ export function renderHtml(notes: LoveNote[]) {
   <section class="hero">
     <span class="hero-heart">❤️</span>
     <h1>For Mariam</h1>
-    <p class="subtitle">A few of the reasons I love you</p>
+    <p class="subtitle">with all my love</p>
   </section>
 
   <div class="divider">✦</div>
@@ -370,14 +326,11 @@ export function renderHtml(notes: LoveNote[]) {
     </div>
   </div>
 
+  <div class="divider">✦</div>
+
   <h2 class="section-title">Places we've been together</h2>
   <div class="map-wrap">
     <div id="map"></div>
-  </div>
-
-  <h2 class="section-title">Reasons I love you</h2>
-  <div class="grid">
-    ${cards}
   </div>
 </main>
 
