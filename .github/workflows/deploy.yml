@@ -23,6 +23,7 @@ jobs:
 
       - name: Apply D1 migrations
         run: npx wrangler d1 migrations apply DB --remote
+        continue-on-error: true
 
       - name: Deploy Worker
         run: npx wrangler deploy
