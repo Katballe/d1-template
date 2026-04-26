@@ -17,9 +17,15 @@ export default {
 			return Response.redirect(url.origin + "/", 303);
 		}
 
-		const { results: notes } = await env.DB.prepare(
-			"SELECT * FROM notes ORDER BY created_at DESC LIMIT 100"
-		).all<Note>();
+		let notes: Note[] = [];
+		try {
+			const { results } = await env.DB.prepare(
+				"SELECT * FROM notes ORDER BY created_at DESC LIMIT 100"
+			).all<Note>();
+			notes = results;
+		} catch {
+			// notes table not yet created
+		}
 
 		return new Response(renderHtml(notes), {
 			headers: { "content-type": "text/html; charset=UTF-8" },

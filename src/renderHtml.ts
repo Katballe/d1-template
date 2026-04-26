@@ -474,46 +474,38 @@ export function renderHtml(notes: Note[]) {
 
     /* ── Countdown (Mariam edition) ── */
     (function () {
-      const target = new Date('2026-05-12T00:00:00');
-      function tick() {
-        const diff = target - Date.now();
-        if (diff <= 0) {
-          document.querySelector('.countdown-note .note-text').textContent = 'Today is the day! 🎉❤️';
-          document.getElementById('cd-weeks').textContent = '0';
-          document.getElementById('cd-fine-print').textContent = '';
-          return;
-        }
-        const days = Math.ceil(diff / 86400000);
-        const mariamDays = Math.round(days * 0.6);
-        document.getElementById('cd-weeks').textContent = String(mariamDays);
+      var target = new Date('2026-05-12T00:00:00').getTime();
+      var days = Math.ceil((target - Date.now()) / 86400000);
+      if (days <= 0) {
+        document.querySelector('.countdown-note .note-text').textContent = 'Today is the day! 🎉❤️';
+        document.getElementById('cd-weeks').textContent = '0';
+      } else {
+        document.getElementById('cd-weeks').textContent = String(Math.round(days * 0.6));
         document.getElementById('cd-fine-print').textContent = '(technically ' + days + ' days, but it\'s basically nothing)';
       }
-      tick();
     })();
 
     /* ── Map ── */
-    const places = ${placesJson};
-
-    const map = L.map('map', { zoomControl: true, scrollWheelZoom: false }).setView([44, 18], 4);
-
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-      maxZoom: 19,
-    }).addTo(map);
-
-    const pinIcon = L.divIcon({
-      className: '',
-      html: '<div class="pin-marker"></div>',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -34],
-    });
-
-    places.forEach(function(p) {
-      L.marker([p.lat, p.lng], { icon: pinIcon })
-        .bindPopup('<strong>' + p.name + '</strong>')
-        .addTo(map);
-    });
+    try {
+      var places = ${placesJson};
+      var map = L.map('map', { zoomControl: true, scrollWheelZoom: false }).setView([44, 18], 4);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+        maxZoom: 19,
+      }).addTo(map);
+      var pinIcon = L.divIcon({
+        className: '',
+        html: '<div class="pin-marker"></div>',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -34],
+      });
+      places.forEach(function(p) {
+        L.marker([p.lat, p.lng], { icon: pinIcon })
+          .bindPopup('<strong>' + p.name + '</strong>')
+          .addTo(map);
+      });
+    } catch(e) {}
   })();
 </script>
 </body>
