@@ -395,6 +395,20 @@ export function renderHtml(notes: Note[]) {
 
   <div class="divider">✦</div>
 
+  <h2 class="section-title">Notes to each other</h2>
+  <div class="notes-form-wrap">
+    <form method="POST" action="/notes" class="notes-form">
+      <input class="notes-input" type="text" name="author" placeholder="Your name" required maxlength="60" />
+      <textarea class="notes-textarea" name="message" placeholder="Write a note..." required maxlength="1000"></textarea>
+      <button class="notes-btn" type="submit">Send ❤️</button>
+    </form>
+  </div>
+  <div class="notes-list">
+    ${notesHtml}
+  </div>
+
+  <div class="divider">✦</div>
+
   <article class="letter">
     <p>
       There are moments in life that quietly redefine everything — and you, Mariam,
@@ -430,19 +444,6 @@ export function renderHtml(notes: Note[]) {
   <h2 class="section-title">Places we've been together</h2>
   <div class="map-wrap">
     <div id="map"></div>
-  </div>
-  <div class="divider">✦</div>
-
-  <h2 class="section-title">Notes to each other</h2>
-  <div class="notes-form-wrap">
-    <form method="POST" action="/notes" class="notes-form">
-      <input class="notes-input" type="text" name="author" placeholder="Your name" required maxlength="60" />
-      <textarea class="notes-textarea" name="message" placeholder="Write a note..." required maxlength="1000"></textarea>
-      <button class="notes-btn" type="submit">Send ❤️</button>
-    </form>
-  </div>
-  <div class="notes-list">
-    ${notesHtml}
   </div>
 </main>
 
