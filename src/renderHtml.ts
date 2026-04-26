@@ -1,3 +1,14 @@
+type Note = { id: number; author: string; message: string; created_at: string };
+
+function esc(s: string) {
+	return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function fmtDate(raw: string) {
+	const d = new Date(raw.includes("T") ? raw : raw.replace(" ", "T") + "Z");
+	return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+}
+
 const PLACES = [
 	{ name: "Madeira", lat: 32.7607, lng: -16.9595 },
 	{ name: "Athens", lat: 37.9838, lng: 23.7275 },
@@ -9,8 +20,19 @@ const PLACES = [
 	{ name: "Santorini", lat: 36.3932, lng: 25.4615 },
 ];
 
-export function renderHtml() {
+export function renderHtml(notes: Note[]) {
 	const placesJson = JSON.stringify(PLACES);
+
+	const notesHtml = notes.length === 0
+		? `<p class="notes-empty">No notes yet — be the first to write one ❤️</p>`
+		: notes.map(({ author, message, created_at }) => `
+        <div class="note-card">
+          <div class="note-meta">
+            <span class="note-author">${esc(author)}</span>
+            <span class="note-date">${fmtDate(created_at)}</span>
+          </div>
+          <p class="note-msg">${esc(message)}</p>
+        </div>`).join("");
 
 	return `<!DOCTYPE html>
 <html lang="en">
@@ -271,6 +293,83 @@ export function renderHtml() {
       display: block;
     }
 
+    /* ── Notes ── */
+    .notes-form-wrap {
+      margin-bottom: 2rem;
+    }
+    .notes-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .notes-input, .notes-textarea {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      color: var(--cream);
+      font-family: 'Lato', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      backdrop-filter: blur(6px);
+      width: 100%;
+    }
+    .notes-input::placeholder, .notes-textarea::placeholder { color: rgba(252,228,236,0.3); }
+    .notes-input:focus, .notes-textarea:focus { border-color: var(--rose); }
+    .notes-textarea { resize: vertical; min-height: 90px; }
+    .notes-btn {
+      align-self: flex-end;
+      background: linear-gradient(135deg, var(--rose-lt), var(--rose));
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.7rem 1.6rem;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .notes-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .notes-list { display: flex; flex-direction: column; gap: 1rem; }
+    .note-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1.2rem 1.4rem;
+      backdrop-filter: blur(6px);
+    }
+    .note-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.5rem;
+      gap: 1rem;
+    }
+    .note-author {
+      font-weight: 600;
+      color: var(--rose-lt);
+      font-size: 0.95rem;
+    }
+    .note-date {
+      font-size: 0.75rem;
+      color: rgba(252,228,236,0.35);
+      white-space: nowrap;
+    }
+    .note-msg {
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: rgba(252,228,236,0.88);
+      white-space: pre-wrap;
+    }
+    .notes-empty {
+      text-align: center;
+      color: rgba(252,228,236,0.35);
+      font-style: italic;
+      padding: 1.5rem 0;
+    }
+
     /* ── Footer ── */
     footer {
       position: relative;
@@ -331,6 +430,19 @@ export function renderHtml() {
   <h2 class="section-title">Places we've been together</h2>
   <div class="map-wrap">
     <div id="map"></div>
+  </div>
+  <div class="divider">✦</div>
+
+  <h2 class="section-title">Notes to each other</h2>
+  <div class="notes-form-wrap">
+    <form method="POST" action="/notes" class="notes-form">
+      <input class="notes-input" type="text" name="author" placeholder="Your name" required maxlength="60" />
+      <textarea class="notes-textarea" name="message" placeholder="Write a note..." required maxlength="1000"></textarea>
+      <button class="notes-btn" type="submit">Send ❤️</button>
+    </form>
+  </div>
+  <div class="notes-list">
+    ${notesHtml}
   </div>
 </main>
 
