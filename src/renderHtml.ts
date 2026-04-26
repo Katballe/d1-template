@@ -39,7 +39,7 @@ export function renderHtml(notes: Note[]) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>For Mariam ❤️</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -451,62 +451,63 @@ export function renderHtml(notes: Note[]) {
 
 <footer>made with love, just for you ✦ mariam</footer>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  (function () {
-    /* ── Floating hearts ── */
-    const canvas = document.getElementById('hearts-canvas');
-    const emojis = ['❤️', '🌸', '✨', '💕', '💗', '🌹'];
-    function spawnHeart() {
-      const el = document.createElement('span');
+  /* countdown — fully isolated */
+  try {
+    var _t = new Date('2026-05-12T00:00:00').getTime();
+    var _d = Math.ceil((_t - Date.now()) / 86400000);
+    if (_d <= 0) {
+      document.getElementById('cd-weeks').textContent = '0';
+    } else {
+      document.getElementById('cd-weeks').textContent = '' + Math.round(_d * 0.6);
+      document.getElementById('cd-fine-print').textContent = '(technically ' + _d + ' days, but it\'s basically nothing)';
+    }
+  } catch(e) {}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  /* map — fully isolated */
+  try {
+    var _places = ${placesJson};
+    var _map = L.map('map', { zoomControl: true, scrollWheelZoom: false }).setView([44, 18], 4);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+      maxZoom: 19
+    }).addTo(_map);
+    var _icon = L.divIcon({
+      className: '',
+      html: '<div class="pin-marker"></div>',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -34]
+    });
+    _places.forEach(function(p) {
+      L.marker([p.lat, p.lng], { icon: _icon }).bindPopup('<strong>' + p.name + '</strong>').addTo(_map);
+    });
+  } catch(e) {}
+</script>
+
+<script>
+  /* floating hearts — fully isolated */
+  try {
+    var _canvas = document.getElementById('hearts-canvas');
+    var _emojis = ['❤️','🌸','✨','💕','💗','🌹'];
+    function _spawnHeart() {
+      var el = document.createElement('span');
       el.className = 'heart';
-      el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      el.textContent = _emojis[Math.floor(Math.random() * _emojis.length)];
       el.style.left = Math.random() * 100 + 'vw';
-      const dur = 7 + Math.random() * 8;
+      var dur = 7 + Math.random() * 8;
       el.style.animationDuration = dur + 's';
       el.style.animationDelay = (Math.random() * 3) + 's';
       el.style.fontSize = (1 + Math.random() * 1.2) + 'rem';
-      canvas.appendChild(el);
-      setTimeout(() => el.remove(), (dur + 3) * 1000);
+      _canvas.appendChild(el);
+      setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, (dur + 3) * 1000);
     }
-    for (let i = 0; i < 12; i++) setTimeout(spawnHeart, i * 600);
-    setInterval(spawnHeart, 1800);
-
-    /* ── Countdown (Mariam edition) ── */
-    (function () {
-      var target = new Date('2026-05-12T00:00:00').getTime();
-      var days = Math.ceil((target - Date.now()) / 86400000);
-      if (days <= 0) {
-        document.querySelector('.countdown-note .note-text').textContent = 'Today is the day! 🎉❤️';
-        document.getElementById('cd-weeks').textContent = '0';
-      } else {
-        document.getElementById('cd-weeks').textContent = String(Math.round(days * 0.6));
-        document.getElementById('cd-fine-print').textContent = '(technically ' + days + ' days, but it\'s basically nothing)';
-      }
-    })();
-
-    /* ── Map ── */
-    try {
-      var places = ${placesJson};
-      var map = L.map('map', { zoomControl: true, scrollWheelZoom: false }).setView([44, 18], 4);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-        maxZoom: 19,
-      }).addTo(map);
-      var pinIcon = L.divIcon({
-        className: '',
-        html: '<div class="pin-marker"></div>',
-        iconSize: [32, 32],
-        iconAnchor: [16, 32],
-        popupAnchor: [0, -34],
-      });
-      places.forEach(function(p) {
-        L.marker([p.lat, p.lng], { icon: pinIcon })
-          .bindPopup('<strong>' + p.name + '</strong>')
-          .addTo(map);
-      });
-    } catch(e) {}
-  })();
+    for (var _i = 0; _i < 12; _i++) setTimeout(_spawnHeart, _i * 600);
+    setInterval(_spawnHeart, 1800);
+  } catch(e) {}
 </script>
 </body>
 </html>`;
