@@ -436,7 +436,7 @@ export function renderHtml(notes: Note[]) {
     <p class="note-label">The Mariam Countdown™</p>
     <p class="note-text">It's basically just a couple of weeks until May 12th ❤️</p>
     <div class="countdown-boxes">
-      <div class="cbox"><span class="cbox-num" id="cd-weeks">--</span><span class="cbox-label">weeks</span></div>
+      <div class="cbox"><span class="cbox-num" id="cd-weeks">--</span><span class="cbox-label">days</span></div>
     </div>
     <p class="cd-fine-print" id="cd-fine-print"></p>
   </div>
@@ -484,9 +484,9 @@ export function renderHtml(notes: Note[]) {
           return;
         }
         const days = Math.ceil(diff / 86400000);
-        const weeks = Math.floor(days / 7);
-        document.getElementById('cd-weeks').textContent = String(weeks);
-        document.getElementById('cd-fine-print').textContent = '(well… ' + days + ' days, but basically the same thing)';
+        const mariamDays = Math.round(days * 0.6);
+        document.getElementById('cd-weeks').textContent = String(mariamDays);
+        document.getElementById('cd-fine-print').textContent = '(technically ' + days + ' days, but it\'s basically nothing)';
       }
       tick();
     })();
