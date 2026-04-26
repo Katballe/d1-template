@@ -20,8 +20,15 @@ const PLACES = [
 	{ name: "Santorini", lat: 36.3932, lng: 25.4615 },
 ];
 
+function getMariamCountdown() {
+	const target = new Date('2026-05-12T00:00:00Z').getTime();
+	const real = Math.max(0, Math.ceil((target - Date.now()) / 86400000));
+	return { real, mariam: Math.round(real * 0.6) };
+}
+
 export function renderHtml(notes: Note[]) {
 	const placesJson = JSON.stringify(PLACES);
+	const { real: realDays, mariam: mariamDays } = getMariamCountdown();
 
 	const notesHtml = notes.length === 0
 		? `<p class="notes-empty">No notes yet — be the first to write one ❤️</p>`
@@ -436,9 +443,9 @@ export function renderHtml(notes: Note[]) {
     <p class="note-label">The Mariam Countdown™</p>
     <p class="note-text">It's basically just a couple of weeks until May 12th ❤️</p>
     <div class="countdown-boxes">
-      <div class="cbox"><span class="cbox-num" id="cd-weeks">--</span><span class="cbox-label">days</span></div>
+      <div class="cbox"><span class="cbox-num">${mariamDays === 0 ? "🎉" : mariamDays}</span><span class="cbox-label">days</span></div>
     </div>
-    <p class="cd-fine-print" id="cd-fine-print"></p>
+    <p class="cd-fine-print">${realDays === 0 ? "Today is the day!" : "(technically " + realDays + " days, but it\\'s basically nothing)"}</p>
   </div>
 
   <div class="divider">✦</div>
@@ -451,19 +458,6 @@ export function renderHtml(notes: Note[]) {
 
 <footer>made with love, just for you ✦ mariam</footer>
 
-<script>
-  /* countdown — fully isolated */
-  try {
-    var _t = new Date('2026-05-12T00:00:00').getTime();
-    var _d = Math.ceil((_t - Date.now()) / 86400000);
-    if (_d <= 0) {
-      document.getElementById('cd-weeks').textContent = '0';
-    } else {
-      document.getElementById('cd-weeks').textContent = '' + Math.round(_d * 0.6);
-      document.getElementById('cd-fine-print').textContent = '(technically ' + _d + ' days, but it\'s basically nothing)';
-    }
-  } catch(e) {}
-</script>
 
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
