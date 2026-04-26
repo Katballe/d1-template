@@ -8,11 +8,10 @@ export default {
 
 		if (request.method === "POST" && url.pathname === "/notes") {
 			const form = await request.formData();
-			const author = (form.get("author") ?? "").toString().trim().slice(0, 60);
 			const message = (form.get("message") ?? "").toString().trim().slice(0, 1000);
-			if (author && message) {
+			if (message) {
 				await env.DB.prepare("INSERT INTO notes (author, message) VALUES (?, ?)")
-					.bind(author, message)
+					.bind("", message)
 					.run();
 			}
 			return Response.redirect(url.origin + "/", 303);

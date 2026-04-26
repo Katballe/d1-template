@@ -25,10 +25,9 @@ export function renderHtml(notes: Note[]) {
 
 	const notesHtml = notes.length === 0
 		? `<p class="notes-empty">No notes yet — be the first to write one ❤️</p>`
-		: notes.map(({ author, message, created_at }) => `
+		: notes.map(({ message, created_at }) => `
         <div class="note-card">
           <div class="note-meta">
-            <span class="note-author">${esc(author)}</span>
             <span class="note-date">${fmtDate(created_at)}</span>
           </div>
           <p class="note-msg">${esc(message)}</p>
@@ -363,6 +362,12 @@ export function renderHtml(notes: Note[]) {
       color: rgba(252,228,236,0.88);
       white-space: pre-wrap;
     }
+    .cd-fine-print {
+      margin-top: 0.8rem;
+      font-size: 0.78rem;
+      color: rgba(252,228,236,0.3);
+      font-style: italic;
+    }
     .notes-empty {
       text-align: center;
       color: rgba(252,228,236,0.35);
@@ -398,7 +403,6 @@ export function renderHtml(notes: Note[]) {
   <h2 class="section-title">Notes to each other</h2>
   <div class="notes-form-wrap">
     <form method="POST" action="/notes" class="notes-form">
-      <input class="notes-input" type="text" name="author" placeholder="Your name" required maxlength="60" />
       <textarea class="notes-textarea" name="message" placeholder="Write a note..." required maxlength="1000"></textarea>
       <button class="notes-btn" type="submit">Send ❤️</button>
     </form>
@@ -429,14 +433,12 @@ export function renderHtml(notes: Note[]) {
   <div class="divider">✦</div>
 
   <div class="countdown-note">
-    <p class="note-label">next time</p>
-    <p class="note-text">I am counting down the days until I get to see you again — May 12th cannot come soon enough. ❤️</p>
+    <p class="note-label">The Mariam Countdown™</p>
+    <p class="note-text">It's basically just a couple of weeks until May 12th ❤️</p>
     <div class="countdown-boxes">
-      <div class="cbox"><span class="cbox-num" id="cd-days">--</span><span class="cbox-label">days</span></div>
-      <div class="cbox"><span class="cbox-num" id="cd-hours">--</span><span class="cbox-label">hours</span></div>
-      <div class="cbox"><span class="cbox-num" id="cd-mins">--</span><span class="cbox-label">minutes</span></div>
-      <div class="cbox"><span class="cbox-num" id="cd-secs">--</span><span class="cbox-label">seconds</span></div>
+      <div class="cbox"><span class="cbox-num" id="cd-weeks">--</span><span class="cbox-label">weeks</span></div>
     </div>
+    <p class="cd-fine-print" id="cd-fine-print"></p>
   </div>
 
   <div class="divider">✦</div>
@@ -470,27 +472,23 @@ export function renderHtml(notes: Note[]) {
     for (let i = 0; i < 12; i++) setTimeout(spawnHeart, i * 600);
     setInterval(spawnHeart, 1800);
 
-    /* ── Countdown ── */
+    /* ── Countdown (Mariam edition) ── */
     (function () {
       const target = new Date('2026-05-12T00:00:00');
       function tick() {
         const diff = target - Date.now();
         if (diff <= 0) {
           document.querySelector('.countdown-note .note-text').textContent = 'Today is the day! 🎉❤️';
-          ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(function(id){ document.getElementById(id).textContent = '0'; });
+          document.getElementById('cd-weeks').textContent = '0';
+          document.getElementById('cd-fine-print').textContent = '';
           return;
         }
-        const d = Math.floor(diff / 86400000);
-        const h = Math.floor((diff % 86400000) / 3600000);
-        const m = Math.floor((diff % 3600000) / 60000);
-        const s = Math.floor((diff % 60000) / 1000);
-        document.getElementById('cd-days').textContent  = String(d);
-        document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
-        document.getElementById('cd-mins').textContent  = String(m).padStart(2,'0');
-        document.getElementById('cd-secs').textContent  = String(s).padStart(2,'0');
+        const days = Math.ceil(diff / 86400000);
+        const weeks = Math.floor(days / 7);
+        document.getElementById('cd-weeks').textContent = String(weeks);
+        document.getElementById('cd-fine-print').textContent = '(well… ' + days + ' days, but basically the same thing)';
       }
       tick();
-      setInterval(tick, 1000);
     })();
 
     /* ── Map ── */
