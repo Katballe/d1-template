@@ -1,23 +1,13 @@
-type Note = { id: number; author: string; message: string; created_at: string };
-
-function esc(s: string) {
-	return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-}
-
-function fmtDate(raw: string) {
-	const d = new Date(raw.includes("T") ? raw : raw.replace(" ", "T") + "Z");
-	return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
-}
-
 const PLACES = [
-	{ name: "Madeira", lat: 32.7607, lng: -16.9595 },
-	{ name: "Athens", lat: 37.9838, lng: 23.7275 },
-	{ name: "Porto", lat: 41.1579, lng: -8.6291 },
-	{ name: "Copenhagen", lat: 55.6761, lng: 12.5683 },
-	{ name: "Tbilisi", lat: 41.6938, lng: 44.8015 },
-	{ name: "Kutaisi", lat: 42.2679, lng: 42.6946 },
-	{ name: "Juta", lat: 42.65, lng: 44.517 },
-	{ name: "Santorini", lat: 36.3932, lng: 25.4615 },
+	{ name: "Madeira",    lat: 32.7607, lng: -16.9595, green: false },
+	{ name: "Athens",     lat: 37.9838, lng:  23.7275, green: false },
+	{ name: "Porto",      lat: 41.1579, lng:  -8.6291, green: false },
+	{ name: "Copenhagen", lat: 55.6761, lng:  12.5683, green: false },
+	{ name: "Tbilisi",    lat: 41.6938, lng:  44.8015, green: false },
+	{ name: "Kutaisi",    lat: 42.2679, lng:  42.6946, green: false },
+	{ name: "Juta",       lat: 42.65,   lng:  44.517,  green: false },
+	{ name: "Santorini",  lat: 36.3932, lng:  25.4615, green: false },
+	{ name: "Lisbon",     lat: 38.7169, lng:  -9.1399, green: true  },
 ];
 
 function getMariamCountdown() {
@@ -26,19 +16,9 @@ function getMariamCountdown() {
 	return { real, mariam: Math.round(real * 0.6) };
 }
 
-export function renderHtml(notes: Note[]) {
+export function renderHtml() {
 	const placesJson = JSON.stringify(PLACES);
 	const { real: realDays, mariam: mariamDays } = getMariamCountdown();
-
-	const notesHtml = notes.length === 0
-		? `<p class="notes-empty">No notes yet — be the first to write one ❤️</p>`
-		: notes.map(({ message, created_at }) => `
-        <div class="note-card">
-          <div class="note-meta">
-            <span class="note-date">${fmtDate(created_at)}</span>
-          </div>
-          <p class="note-msg">${esc(message)}</p>
-        </div>`).join("");
 
 	return `<!DOCTYPE html>
 <html lang="en">
@@ -56,8 +36,6 @@ export function renderHtml(notes: Note[]) {
       --rose:    #e91e8c;
       --rose-lt: #ff6baa;
       --cream:   #fce4ec;
-      --bg1:     #0f0715;
-      --bg2:     #1e0a2e;
       --card-bg: rgba(255,255,255,0.04);
       --card-border: rgba(233,30,140,0.35);
     }
@@ -87,7 +65,7 @@ export function renderHtml(notes: Note[]) {
       user-select: none;
     }
     @keyframes rise {
-      0%   { transform: translateY(0)   rotate(0deg);   opacity: 0; }
+      0%   { transform: translateY(0)   rotate(0deg);  opacity: 0; }
       5%   { opacity: 0.7; }
       90%  { opacity: 0.3; }
       100% { transform: translateY(-110vh) rotate(25deg); opacity: 0; }
@@ -103,10 +81,7 @@ export function renderHtml(notes: Note[]) {
     }
 
     /* ── Hero ── */
-    .hero {
-      text-align: center;
-      margin-bottom: 3.5rem;
-    }
+    .hero { text-align: center; margin-bottom: 3.5rem; }
     .hero-heart {
       font-size: 4rem;
       display: block;
@@ -152,45 +127,13 @@ export function renderHtml(notes: Note[]) {
     }
     .divider::after { background: linear-gradient(to left, transparent, var(--rose)); }
 
-    /* ── Letter ── */
-    .letter {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 2.2rem 2.5rem;
-      margin-bottom: 3rem;
-      backdrop-filter: blur(8px);
-      line-height: 1.85;
-      font-size: 1.05rem;
-      font-style: italic;
-      color: rgba(252,228,236,0.9);
-    }
-    .letter p + p { margin-top: 1.1rem; }
-    .letter .sign {
-      margin-top: 1.6rem;
-      text-align: right;
-      font-style: normal;
-      font-weight: 400;
-      color: var(--rose-lt);
-    }
-
-    /* ── Section heading ── */
-    .section-title {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-size: 1.7rem;
-      font-weight: 400;
-      color: var(--rose-lt);
-      margin-bottom: 1.8rem;
-      text-align: center;
-    }
-
     /* ── Countdown ── */
     .countdown-note {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 2rem 2rem 1.8rem;
-      margin-bottom: 3rem;
+      margin-bottom: 2rem;
       text-align: center;
       backdrop-filter: blur(8px);
     }
@@ -209,18 +152,8 @@ export function renderHtml(notes: Note[]) {
       margin-bottom: 1.4rem;
       line-height: 1.6;
     }
-    .countdown-boxes {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .cbox {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.3rem;
-    }
+    .countdown-boxes { display: flex; justify-content: center; gap: 1rem; }
+    .cbox { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
     .cbox-num {
       font-size: 2.4rem;
       font-weight: 700;
@@ -229,7 +162,6 @@ export function renderHtml(notes: Note[]) {
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      min-width: 2.8ch;
       line-height: 1;
     }
     .cbox-label {
@@ -237,6 +169,12 @@ export function renderHtml(notes: Note[]) {
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: rgba(252,228,236,0.4);
+    }
+    .cd-fine-print {
+      margin-top: 0.8rem;
+      font-size: 0.78rem;
+      color: rgba(252,228,236,0.3);
+      font-style: italic;
     }
 
     /* ── Map ── */
@@ -246,10 +184,10 @@ export function renderHtml(notes: Note[]) {
       border: 1px solid var(--card-border);
       box-shadow: 0 0 40px rgba(233,30,140,0.15);
       height: 420px;
+      margin-bottom: 2rem;
     }
     #map { width: 100%; height: 100%; }
 
-    /* Leaflet overrides */
     .leaflet-container { background: #0f0715; }
     .leaflet-popup-content-wrapper {
       background: #1e0a2e;
@@ -263,7 +201,6 @@ export function renderHtml(notes: Note[]) {
       margin: 10px 14px;
       font-family: 'Lato', sans-serif;
       font-size: 0.95rem;
-      font-weight: 400;
       white-space: nowrap;
     }
     .leaflet-popup-close-button { color: var(--rose-lt) !important; }
@@ -278,20 +215,25 @@ export function renderHtml(notes: Note[]) {
     }
     .leaflet-control-attribution a { color: rgba(252,228,236,0.4) !important; }
 
-    /* Custom pin marker */
-    .pin-marker {
+    .pin-marker, .pin-marker-green {
       display: flex;
       align-items: center;
       justify-content: center;
       width: 32px;
       height: 32px;
-      background: radial-gradient(circle at 40% 35%, #ff6baa, #e91e8c);
       border-radius: 50% 50% 50% 0;
       transform: rotate(-45deg);
-      box-shadow: 0 2px 12px rgba(233,30,140,0.6);
       border: 2px solid rgba(255,255,255,0.25);
     }
-    .pin-marker::after {
+    .pin-marker {
+      background: radial-gradient(circle at 40% 35%, #ff6baa, #e91e8c);
+      box-shadow: 0 2px 12px rgba(233,30,140,0.6);
+    }
+    .pin-marker-green {
+      background: radial-gradient(circle at 40% 35%, #69f0ae, #00c853);
+      box-shadow: 0 2px 12px rgba(0,200,83,0.6);
+    }
+    .pin-marker::after, .pin-marker-green::after {
       content: '❤';
       transform: rotate(45deg);
       font-size: 13px;
@@ -299,87 +241,25 @@ export function renderHtml(notes: Note[]) {
       display: block;
     }
 
-    /* ── Notes ── */
-    .notes-form-wrap {
-      margin-bottom: 2rem;
-    }
-    .notes-form {
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-    }
-    .notes-input, .notes-textarea {
+    /* ── Letter ── */
+    .letter {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 0.9rem 1.1rem;
-      color: var(--cream);
-      font-family: 'Lato', sans-serif;
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.2s;
-      backdrop-filter: blur(6px);
-      width: 100%;
+      border-radius: 16px;
+      padding: 2.2rem 2.5rem;
+      backdrop-filter: blur(8px);
+      line-height: 1.85;
+      font-size: 1.05rem;
+      font-style: italic;
+      color: rgba(252,228,236,0.9);
     }
-    .notes-input::placeholder, .notes-textarea::placeholder { color: rgba(252,228,236,0.3); }
-    .notes-input:focus, .notes-textarea:focus { border-color: var(--rose); }
-    .notes-textarea { resize: vertical; min-height: 90px; }
-    .notes-btn {
-      align-self: flex-end;
-      background: linear-gradient(135deg, var(--rose-lt), var(--rose));
-      border: none;
-      border-radius: 10px;
-      color: #fff;
-      font-family: 'Lato', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 600;
-      padding: 0.7rem 1.6rem;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.15s;
-    }
-    .notes-btn:hover { opacity: 0.88; transform: translateY(-1px); }
-    .notes-list { display: flex; flex-direction: column; gap: 1rem; }
-    .note-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 1.2rem 1.4rem;
-      backdrop-filter: blur(6px);
-    }
-    .note-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 0.5rem;
-      gap: 1rem;
-    }
-    .note-author {
-      font-weight: 600;
+    .letter p + p { margin-top: 1.1rem; }
+    .letter .sign {
+      margin-top: 1.6rem;
+      text-align: right;
+      font-style: normal;
+      font-weight: 400;
       color: var(--rose-lt);
-      font-size: 0.95rem;
-    }
-    .note-date {
-      font-size: 0.75rem;
-      color: rgba(252,228,236,0.35);
-      white-space: nowrap;
-    }
-    .note-msg {
-      font-size: 0.95rem;
-      line-height: 1.65;
-      color: rgba(252,228,236,0.88);
-      white-space: pre-wrap;
-    }
-    .cd-fine-print {
-      margin-top: 0.8rem;
-      font-size: 0.78rem;
-      color: rgba(252,228,236,0.3);
-      font-style: italic;
-    }
-    .notes-empty {
-      text-align: center;
-      color: rgba(252,228,236,0.35);
-      font-style: italic;
-      padding: 1.5rem 0;
     }
 
     /* ── Footer ── */
@@ -405,17 +285,21 @@ export function renderHtml(notes: Note[]) {
     <p class="subtitle">with all my love</p>
   </section>
 
-  <div class="divider">✦</div>
-
-  <h2 class="section-title">Notes to each other</h2>
-  <div class="notes-form-wrap">
-    <form method="POST" action="/notes" class="notes-form">
-      <textarea class="notes-textarea" name="message" placeholder="Write a note..." required maxlength="1000"></textarea>
-      <button class="notes-btn" type="submit">Send ❤️</button>
-    </form>
+  <div class="countdown-note">
+    <p class="note-label">The Mariam Countdown™</p>
+    <p class="note-text">It's basically just a couple of weeks until May 12th ❤️</p>
+    <div class="countdown-boxes">
+      <div class="cbox">
+        <span class="cbox-num">${mariamDays === 0 ? "🎉" : mariamDays}</span>
+        <span class="cbox-label">days</span>
+      </div>
+    </div>
+    <p class="cd-fine-print">${realDays === 0 ? "Today is the day!" : "(technically " + realDays + " days, but it's basically nothing)"}</p>
   </div>
-  <div class="notes-list">
-    ${notesHtml}
+
+  <h2 style="font-family:'Playfair Display',Georgia,serif;font-size:1.7rem;font-weight:400;color:var(--rose-lt);margin-bottom:1.2rem;text-align:center;">Places we've been together</h2>
+  <div class="map-wrap">
+    <div id="map"></div>
   </div>
 
   <div class="divider">✦</div>
@@ -436,32 +320,12 @@ export function renderHtml(notes: Note[]) {
     </p>
     <p class="sign">— Yours, forever ❤️</p>
   </article>
-
-  <div class="divider">✦</div>
-
-  <div class="countdown-note">
-    <p class="note-label">The Mariam Countdown™</p>
-    <p class="note-text">It's basically just a couple of weeks until May 12th ❤️</p>
-    <div class="countdown-boxes">
-      <div class="cbox"><span class="cbox-num">${mariamDays === 0 ? "🎉" : mariamDays}</span><span class="cbox-label">days</span></div>
-    </div>
-    <p class="cd-fine-print">${realDays === 0 ? "Today is the day!" : "(technically " + realDays + " days, but it\\'s basically nothing)"}</p>
-  </div>
-
-  <div class="divider">✦</div>
-
-  <h2 class="section-title">Places we've been together</h2>
-  <div class="map-wrap">
-    <div id="map"></div>
-  </div>
 </main>
 
 <footer>made with love, just for you ✦ mariam</footer>
 
-
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  /* map — fully isolated */
   try {
     var _places = ${placesJson};
     var _map = L.map('map', { zoomControl: true, scrollWheelZoom: false }).setView([44, 18], 4);
@@ -469,21 +333,20 @@ export function renderHtml(notes: Note[]) {
       attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
       maxZoom: 19
     }).addTo(_map);
-    var _icon = L.divIcon({
-      className: '',
-      html: '<div class="pin-marker"></div>',
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -34]
-    });
     _places.forEach(function(p) {
-      L.marker([p.lat, p.lng], { icon: _icon }).bindPopup('<strong>' + p.name + '</strong>').addTo(_map);
+      var icon = L.divIcon({
+        className: '',
+        html: '<div class="' + (p.green ? 'pin-marker-green' : 'pin-marker') + '"></div>',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -34]
+      });
+      L.marker([p.lat, p.lng], { icon: icon }).bindPopup('<strong>' + p.name + '</strong>').addTo(_map);
     });
   } catch(e) {}
 </script>
 
 <script>
-  /* floating hearts — fully isolated */
   try {
     var _canvas = document.getElementById('hearts-canvas');
     var _emojis = ['❤️','🌸','✨','💕','💗','🌹'];
