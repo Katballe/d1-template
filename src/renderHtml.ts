@@ -306,14 +306,15 @@ export function renderHtml() {
 
   <article class="letter">
     <p>
-      There are moments in life that quietly redefine everything — and you, Mariam,
-      are one of those moments for me. Every single day I spend with you reminds me
-      how lucky I am.
+      From day one, our relationship has veen a surreal adventure - a fairytale. 
+      We talked like friends, laughed like there was nobody around and started a journey which neither knew where would end.
+      First it took us to Santorini, and my love, and my perspective on vacations changed. I had an experience which might 
+      be matched. An experience which proved to me that you and I are connected - we have to make this work. 
     </p>
     <p>
-      I made this little page because I wanted you to know — in a way I hope feels
-      as real as I mean it — just how much you mean to me. These are not just words.
-      They are the truest things I know.
+      I made this update to the page to show you how much I still care. There's a decent chance you'll never see this update. 
+      And even when you don't see it - the love is there. Like this update. We are making this work - and I don't want it any 
+      other way.
     </p>
     <p>
       You are my favourite person. Always.
